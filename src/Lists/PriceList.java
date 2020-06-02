@@ -25,7 +25,11 @@ public class PriceList {
 
     }
 
-    public List <Product> showProductList () {
+    public List <Product> showProductList () {// дублирует - не нужен
         return this.products;
+    }
+
+    public List<Product> getProducts() { //нужен ли этот метод
+        return products;
     }
 }

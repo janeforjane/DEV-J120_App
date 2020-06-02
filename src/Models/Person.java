@@ -12,6 +12,15 @@ public class Person {
         this.deliveryAddress = deliveryAddress;
     }
 
+    @Override
+    public String toString() {
+        return "Person{" +
+                "name='" + name + '\'' +
+                ", numberPhone='" + numberPhone + '\'' +
+                ", deliveryAddress='" + deliveryAddress + '\'' +
+                '}';
+    }
+
     public String getName() {
         return name;
     }

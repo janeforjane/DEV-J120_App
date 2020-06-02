@@ -8,8 +8,8 @@ import java.util.List;
 
 public interface ProductIO {
 
-    List<Product> readProducts() throws FileNotFoundException;
+    List<Product> readProductsFromFile() throws FileNotFoundException;
 
-    void changeProduct(Product product, Integer stockBalance) throws IOException;
+    void changeStockBalanceInFile(Product product, Integer stockBalance) throws IOException;
 
 }
