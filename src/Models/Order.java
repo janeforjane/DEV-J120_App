@@ -51,6 +51,7 @@ public class Order {
 
     public void addItem (OrderItem orderItem) {
         orderItems.put(orderItem.getProduct().getId(), orderItem);
+        System.out.println("Продукт " + orderItem.getProduct().getName() + " добавлен в заказ в количестве " + orderItem.getCount());
 
     }
 
@@ -59,7 +60,7 @@ public class Order {
                 OrderItem orderItem = new OrderItem(product, count);
 
                 this.orderItems.put(orderItem.getProduct().getId(), orderItem);
-                System.out.println("В заказ добавлен товар.");
+                System.out.println("В заказ добавлен товар." + orderItem.getProduct().getId());
     }
 
     public void deleteOrderItem (Product product) {
@@ -69,6 +70,21 @@ public class Order {
         System.out.println("Такого товара нет в заказе");
 
     }
+
+    public void changeCountOfOrderItem (Product product, Integer newCount) {
+        if (newCount != 0) {
+
+            if (this.orderItems.containsKey(product.getId())) {
+                this.orderItems.get(product.getId()).setCount(newCount);
+            } else {
+                System.out.println("Такого товара нет в заказе");
+            }
+        } else {
+            System.out.println("Нельзя поставить количество 0");
+        }
+
+    }
+
 
 
     public Integer IdGenerator () {

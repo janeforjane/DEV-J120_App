@@ -11,8 +11,7 @@ public class OrderList {
 
     private List<Order> orders = new ArrayList<>();
 
-    public OrderList (Order order) {
-        orders.add(order);
+    public OrderList () {
     }
 
     public void addOrder (Order order) {

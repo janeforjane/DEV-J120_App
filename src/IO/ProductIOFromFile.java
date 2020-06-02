@@ -11,11 +11,18 @@ import java.util.Scanner;
 
 public class ProductIOFromFile implements ProductIO {
 
+    private String pathToFile;
+    List<Product> products = new ArrayList<>();//возможно создать коллекцию products в main или BL
+
+    public void setPathToFile(String pathToFile) {
+        this.pathToFile = pathToFile;
+    }
+
     public List<Product> readProductsFromFile() throws FileNotFoundException {
 
-        List<Product> products = new ArrayList<>();
+//        List<Product> products = new ArrayList<>(); //коллекция будет создана при создании объекта ProductIOFromFile
 
-        FileInputStream fileInputStream = new FileInputStream("PriceListFile");
+        FileInputStream fileInputStream = new FileInputStream(pathToFile);
         Scanner scanner = new Scanner(fileInputStream);
         scanner.useDelimiter(";");
         while (scanner.hasNextLine()) {
@@ -38,11 +45,10 @@ public class ProductIOFromFile implements ProductIO {
     @Override
     public void changeStockBalanceInFile(Product product, Integer deleteFromStockBalance) throws IOException {
 
-        FileInputStream fileInputStream = new FileInputStream("PriceListFile");
+        FileInputStream fileInputStream = new FileInputStream(pathToFile);
         BufferedInputStream bufferedInputStream = new BufferedInputStream( fileInputStream);
 
-        FileOutputStream fileOutputStream = new FileOutputStream("OutPriceListFile",true);
-        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
+
 
 //        Writer writer = new FileWriter("PriceListFile");
 //        RandomAccessFile randomAccessFile = new RandomAccessFile();
@@ -64,12 +70,12 @@ public class ProductIOFromFile implements ProductIO {
 
             if (id.equals(product.getId())){
 
-                sb.append(id).append("!");
-                sb.append(name).append("!");
-                sb.append(color).append("!");
-                sb.append(price).append("!");
+                sb.append(id).append(";");
+                sb.append(name).append(";");
+                sb.append(color).append(";");
+                sb.append(price).append(";");
 
-                    sb.append(stockBalance - deleteFromStockBalance).append("!");
+                    sb.append(stockBalance - deleteFromStockBalance).append(";");
                     sb.append("\n");
                     scanner.nextLine();
             }
@@ -88,7 +94,10 @@ public class ProductIOFromFile implements ProductIO {
 
         String s = sb.toString();
 
-        System.out.println(s);
+        System.out.println("changeStockBalanceInFile: \n"+s);
+
+        FileOutputStream fileOutputStream = new FileOutputStream(pathToFile);
+        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
 
         bufferedOutputStream.write(s.getBytes());
         bufferedOutputStream.close();

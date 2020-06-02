@@ -60,9 +60,11 @@ public class OrderItem {
 
     public void setCount(Integer count) {
         this.count = count;
+        this.price = count * product.getPrice();
     }
 
     public void setPrice(Integer price) {
+
         this.price = price;
     }
 }
