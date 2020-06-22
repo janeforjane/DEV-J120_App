@@ -18,7 +18,7 @@ public class ProductIOFromFile implements ProductIO {
         this.pathToFile = pathToFile;
     }
 
-    public List<Product> readProductsFromFile() throws FileNotFoundException {
+    public List<Product> readProductsFrom() throws FileNotFoundException {
 
 //        List<Product> products = new ArrayList<>(); //коллекция будет создана при создании объекта ProductIOFromFile
 
@@ -43,12 +43,10 @@ public class ProductIOFromFile implements ProductIO {
     }
 
     @Override
-    public void changeStockBalanceInFile(Product product, Integer deleteFromStockBalance) throws IOException {
+    public void changeStockBalanceIn(Product product, Integer deleteFromStockBalance) throws IOException {
 
         FileInputStream fileInputStream = new FileInputStream(pathToFile);
         BufferedInputStream bufferedInputStream = new BufferedInputStream( fileInputStream);
-
-
 
 //        Writer writer = new FileWriter("PriceListFile");
 //        RandomAccessFile randomAccessFile = new RandomAccessFile();
@@ -93,8 +91,6 @@ public class ProductIOFromFile implements ProductIO {
         }
 
         String s = sb.toString();
-
-        System.out.println("changeStockBalanceInFile: \n"+s);
 
         FileOutputStream fileOutputStream = new FileOutputStream(pathToFile);
         BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);

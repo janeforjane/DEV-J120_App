@@ -39,6 +39,16 @@ public class Product {
         this.stockBalance = stockBalance;
     }
 
+    //конструктор для зачитки заказов из файла
+    public Product(Integer id, String name, String color, Integer price) {//с цветом
+
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.price = price;
+
+    }
+
 //    public void addIds (Integer id) {
 //        ids.add(id);
 //

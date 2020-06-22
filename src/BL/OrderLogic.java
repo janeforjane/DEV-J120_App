@@ -1,7 +1,6 @@
 package BL;
 
 import IO.OrderIO;
-import IO.OrderIOFile;
 import IO.ProductIO;
 import Lists.OrderList;
 import Models.Order;
@@ -10,6 +9,7 @@ import Models.Product;
 import Models.Status;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,6 +19,7 @@ public class OrderLogic {
 
     private OrderList orderList = new OrderList();
     private OrderIO orderIO;
+
 
     public OrderIO getOrderIO() {
         return orderIO;
@@ -30,6 +31,10 @@ public class OrderLogic {
 
     public void setProductIO(ProductIO productIO) {
         this.productIO = productIO;
+    }
+
+    public OrderList getOrderList() {
+        return orderList;
     }
 
     public boolean checkStockBalance(Product product, Integer deleteFromStockBalance) {
@@ -54,10 +59,10 @@ public class OrderLogic {
             OrderItem value = entry.getValue();
 
             if (checkStockBalance(value.getProduct(), value.getCount())) {// проверка что на складе есть достаточное количество
-                System.out.println("На складе " + value.getProduct().getStockBalance() + "шт товара -" + value.getProduct().getName() + " цвета " + value.getProduct().getColor());
-
+//                System.out.println("На складе доступно " + value.getProduct().getStockBalance() + " шт товара - " + value.getProduct().getName() + " цвета " + value.getProduct().getColor());
+//                System.out.println("Заказ " + value.getCount() + " шт доступен");
             } else {
-                System.out.println("Продукт " + value.getProduct().getName() + " не может быть добавлен в заказ.");
+                System.out.println("Продукт с ID = " + value.getProduct().getId() + " не может быть заказан.");
                 System.out.println("В заказе указано количество " + value.getCount() + " шт.");
                 System.out.println("На складе осталось только " + value.getProduct().getStockBalance() + " шт.");
 
@@ -69,18 +74,15 @@ public class OrderLogic {
         return result;
     }
 
-    public void changeStockBalanceInOrder(HashMap<Integer, OrderItem> orderItems, ProductIO productIO) throws IOException {
+    public void changeStockBalanceInOrder(HashMap<Integer, OrderItem> orderItems, ProductIO productIO) throws IOException, SQLException {
 
         for (Map.Entry<Integer, OrderItem> entry : orderItems.entrySet()) { //цикл проходится по OrderItems из Order
 
             OrderItem value = entry.getValue();
 
             changeStockBalance(value.getProduct(), value.getCount());// меняю количество у каждого Product
-            productIO.changeStockBalanceInFile(value.getProduct(), value.getCount());// меняю количество в файле
+            productIO.changeStockBalanceIn(value.getProduct(), value.getCount());// меняю количество в файле
 
-
-//            Integer newStockBalance = value.getProduct().getStockBalance() - value.getCount();
-//            value.getProduct().setStockBalance(newStockBalance);
         }
     }
 
@@ -113,7 +115,7 @@ public class OrderLogic {
         }
     }
 
-    public void saveOrder(Order order) throws IOException {
+    public void saveOrder(Order order) throws IOException, SQLException {
         // OrderList должен создаваться один на всю сессию и хранить заказы
 
         //сделать проверку что количество всех товаров не будет отрицательным
@@ -136,10 +138,33 @@ public class OrderLogic {
 
                 orderList.addOrder(order);//запись заказа в коллекцию
 
-                orderIO.writeOrdersInFile(orderList);//запись заказа в файл
+                orderIO.writeOrdersAndOrderItemsIn(orderList);//запись заказа в файл
             } else {
 
-                System.out.println("Поменяй количество в заказе и сохрани заново");
+                System.out.println("Поменяй количество в заказе " + order.getOrderId() + " и сохрани заново");
+            }
+        }
+    }
+
+    public void saveOrderAndItems(Order order) throws IOException, SQLException {
+
+        if (order.getStatusOfOrder().equals(Status.SHIP) || order.getStatusOfOrder().equals(Status.CANC)) {//проверка статуса заказа
+
+            System.out.println("Статус заказа не позволяет его сохранить");
+
+        } else {
+
+            if (checkStockBalanceInOrder(order.getOrderItems())) {//проверка что количество у всех товаров не отрицательное
+
+                order.setStatusOfOrder(Status.SHIP);
+                changeStockBalanceInOrder(order.getOrderItems(), productIO);//уменьшение количества в хранилище и у Product
+
+                orderList.addOrder(order);//запись заказа в коллекцию
+
+                orderIO.writeOrdersAndOrderItemsIn(orderList);//запись заказа в файл
+            } else {
+
+                System.out.println("Поменяй количество в заказе " + order.getOrderId() + " и сохрани заново");
             }
         }
     }

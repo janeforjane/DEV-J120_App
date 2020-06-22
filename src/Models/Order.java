@@ -13,8 +13,6 @@ public class Order {
     private HashMap<Integer, OrderItem> orderItems = new HashMap<>();
     private HashSet <Integer> ids = new HashSet<>();
 
-//    private HashMap <Long, Models.Product> orderList;
-
 
     public Integer getOrderId() {
         return orderId;
@@ -43,15 +41,25 @@ public class Order {
         this.statusOfOrder = Status.PREP;
     }
 
-    //*******
+    //конструктор для создания заказов при чтении файла с заказами
+    public Order(Integer orderId, LocalDate orderDate, Status statusOfOrder, Person contactPerson) {
+        this.orderId = orderId;
+        this.orderDate = orderDate;
+        this.contactPerson = contactPerson;
+        this.statusOfOrder = statusOfOrder;
+    }
 
     public void setStatusOfOrder(Status statusOfOrder) {
-        this.statusOfOrder = statusOfOrder;
+        if (this.statusOfOrder == Status.PREP) {
+            this.statusOfOrder = statusOfOrder;
+        } else {
+            System.out.println("Статус заказа не может быть изменён");
+        }
     }
 
     public void addItem (OrderItem orderItem) {
         orderItems.put(orderItem.getProduct().getId(), orderItem);
-        System.out.println("Продукт " + orderItem.getProduct().getName() + " добавлен в заказ в количестве " + orderItem.getCount());
+        System.out.println("Товар с ID = " + orderItem.getProduct().getName() + " добавлен в заказ в количестве " + orderItem.getCount());
 
     }
 
@@ -60,28 +68,35 @@ public class Order {
                 OrderItem orderItem = new OrderItem(product, count);
 
                 this.orderItems.put(orderItem.getProduct().getId(), orderItem);
-                System.out.println("В заказ добавлен товар." + orderItem.getProduct().getId());
+//                System.out.println("В заказ " + orderId + " добавлен товар с ID =" + orderItem.getProduct().getId()+ " в количестве " + count);
     }
 
     public void deleteOrderItem (Product product) {
         if (this.orderItems.containsKey(product.getId())){
             orderItems.remove(product.getId());
+            System.out.println("Из заказа " + orderId + " удалён товар с ID " + product.getId());
+        } else {
+            System.out.println("Такого товара нет в заказе");
         }
-        System.out.println("Такого товара нет в заказе");
 
     }
 
     public void changeCountOfOrderItem (Product product, Integer newCount) {
-        if (newCount != 0) {
+        if (statusOfOrder != Status.SHIP || statusOfOrder != Status.CANC) {
+            if (newCount != 0) {
 
-            if (this.orderItems.containsKey(product.getId())) {
-                this.orderItems.get(product.getId()).setCount(newCount);
+                if (this.orderItems.containsKey(product.getId())) {
+                    this.orderItems.get(product.getId()).setCount(newCount);
+                } else {
+                    System.out.println("Такого товара нет в заказе");
+                }
             } else {
-                System.out.println("Такого товара нет в заказе");
+                System.out.println("Нельзя поставить количество 0");
             }
         } else {
-            System.out.println("Нельзя поставить количество 0");
+            System.out.println("Статус заказа " + orderId + " - " + statusOfOrder + ". Заказ корректировать нельзя.");
         }
+
 
     }
 
