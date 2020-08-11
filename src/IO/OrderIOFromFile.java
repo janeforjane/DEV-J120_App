@@ -24,53 +24,6 @@ public class OrderIOFromFile implements OrderIO {
 
 
     @Override
-    // использован в старом saveOrder
-//    public void writeOrdersIn(OrderList orderList) throws IOException {
-//
-//        StringBuilder sb = new StringBuilder();
-//
-//        FileOutputStream fileOutputStream = new FileOutputStream(pathToFileOrders);
-//        BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-//
-//
-//        for(int i = 0; i < orderList.getOrders().size(); i++) {//цикл проходится по Order из OrderList
-////            System.out.println(" В элементе списка List " + i + " лежит " + orderList.getOrders().get(i));
-//
-//            String id = String.valueOf(orderList.getOrders().get(i).getOrderId());
-//            String date = String.valueOf(orderList.getOrders().get(i).getOrderDate());
-//            String person = orderList.getOrders().get(i).getContactPerson().toString();
-//
-////            sb.append(i+1).append("\n");
-//            sb.append(id).append(";");
-//            sb.append(date).append(";");
-//            sb.append(person).append(";");
-//
-//            sb.append("\n");
-//
-//
-//            for (Map.Entry<Integer, OrderItem> entry : orderList.getOrders().get(i).getOrderItems().entrySet()) { //цикл проходится по OrderItems каждого Order из OrderList
-//
-//                Integer key = entry.getKey();
-//                OrderItem value = entry.getValue(); //получаю объект строки заказа
-//                String orderItem = value.getOrderItemToString();
-//
-//                sb.append("Строка заказа").append(";").append(orderItem).append(";\n");
-//
-//
-//
-//            }
-//
-////            sb.append("\n");
-//
-//
-//        }
-//
-//        String s = sb.toString();
-//
-//        bufferedOutputStream.write(s.getBytes());
-//        bufferedOutputStream.close();
-//
-//    }
 
     public void writeOrdersAndOrderItemsIn(OrderList orderList) throws IOException {
 
@@ -117,9 +70,9 @@ public class OrderIOFromFile implements OrderIO {
         }
 
         String s = sb.toString();
-        System.out.println(s);
+//        System.out.println(s);
         String s2 = sb2.toString();
-        System.out.println(s2);
+//        System.out.println(s2);
 
         bufferedOutputStream.write(s.getBytes());
         bufferedOutputStream2.write(s2.getBytes());

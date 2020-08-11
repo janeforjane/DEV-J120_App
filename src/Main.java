@@ -1,9 +1,12 @@
 import BL.OrderLogic;
 import IO.OrderIOFromDB;
+import IO.OrderIOFromFile;
 import IO.ProductIOFromDB;
+import IO.ProductIOFromFile;
 import Lists.PriceList;
 import Models.Order;
 import Models.Person;
+import UI.GeneralFrame;
 
 import java.io.IOException;
 import java.sql.*;
@@ -24,22 +27,27 @@ public class Main {
 
         // for DB
 
-        ProductIOFromDB productIOFromDB = new ProductIOFromDB();
-        orderLogic.setProductIO(productIOFromDB); // чтение товаров из БД
-        PriceList priceList = new PriceList(productIOFromDB.readProductsFrom());// чтение из БД и запись в коллекцию
-        OrderIOFromDB orderIO = new OrderIOFromDB();
-        orderLogic.setOrderIO(orderIO); // запись заказов в БД
+//        ProductIOFromDB productIOFromDB = new ProductIOFromDB();
+//        orderLogic.setProductIO(productIOFromDB); // чтение товаров из БД
+//        PriceList priceList = new PriceList(productIOFromDB.readProductsFrom());// чтение из БД и запись в коллекцию
+//        OrderIOFromDB orderIO = new OrderIOFromDB();
+//        orderLogic.setOrderIO(orderIO); // запись заказов в БД
 
         // for files
 
-//        ProductIOFromFile productIOFromFile = new ProductIOFromFile(); // чтение из файла
-//        productIOFromFile.setPathToFile(service.getByName("ProductFilePath")); // чтение из файла
-//        orderLogic.setProductIO(productIOFromFile);// чтение товаров из файла
-//        PriceList priceList = new PriceList(productIOFromFile.readProductsFrom()); // чтение из файла
-//        OrderIOFromFile orderIO = new OrderIOFromFile();
-//        orderLogic.setOrderIO(orderIO); //запись заказов в файл
-//        orderIO.setPathToFileOrders(service.getByName("OrdersFilePath"));
-//        orderIO.setPathToFileOrderItems(service.getByName("OrderItemFilePath"));
+        ProductIOFromFile productIOFromFile = new ProductIOFromFile(); // чтение из файла
+        productIOFromFile.setPathToFile(service.getByName("ProductFilePath")); // чтение из файла
+        orderLogic.setProductIO(productIOFromFile);// чтение товаров из файла
+        PriceList priceList = new PriceList(productIOFromFile.readProductsFrom()); // чтение из файла
+        OrderIOFromFile orderIO = new OrderIOFromFile();
+        orderLogic.setOrderIO(orderIO); //запись заказов в файл
+        orderIO.setPathToFileOrders(service.getByName("OrdersFilePath"));
+        orderIO.setPathToFileOrderItems(service.getByName("OrderItemFilePath"));
+
+        // form
+
+        GeneralFrame generalFrame = new GeneralFrame(productIOFromFile.readProductsFrom(), orderLogic.getOrderList(), orderLogic);
+
 
         // loading orders from (DB or files)
 
@@ -61,30 +69,30 @@ public class Main {
         // create orders; add products in orders
 
         Order orderOfWinnie = new Order(personWinnie);
-        orderOfWinnie.addItem(priceList.getProducts().get(0),3);
-        orderOfWinnie.addItem(priceList.getProducts().get(2),1);
+        orderOfWinnie.addItem(productIOFromFile.readProductsFrom().get(0),3);
+        orderOfWinnie.addItem(productIOFromFile.readProductsFrom().get(2),1);
 
         Order orderOfPiglet = new Order(personPiglet);
-        orderOfPiglet.addItem(priceList.getProducts().get(1),4);
+        orderOfPiglet.addItem(productIOFromFile.readProductsFrom().get(1),4);
 
         Order orderOfRabbit = new Order(personRabbit);
-        orderOfRabbit.addItem(priceList.getProducts().get(2),2);
-        orderOfRabbit.addItem(priceList.getProducts().get(1),1);
+        orderOfRabbit.addItem(productIOFromFile.readProductsFrom().get(2),2);
+        orderOfRabbit.addItem(productIOFromFile.readProductsFrom().get(1),1);
 
         // saving orders in storage (files or DB)
 
-        orderLogic.saveOrderAndItems(orderOfWinnie);
-        orderLogic.saveOrderAndItems(orderOfPiglet);
-        orderLogic.saveOrderAndItems(orderOfRabbit);
+//        orderLogic.saveOrderAndItems(orderOfWinnie);
+//        orderLogic.saveOrderAndItems(orderOfPiglet);
+//        orderLogic.saveOrderAndItems(orderOfRabbit);
 
 
         System.out.println("Общее количество заказов - " + orderLogic.getOrderList().getOrders().size());
 
-        getInfoOfOrder(orderLogic,0);
-        getInfoOfOrder(orderLogic,1);
-        getInfoOfOrder(orderLogic,2);
-        getInfoOfOrder(orderLogic,3);
-        getInfoOfOrder(orderLogic,4);
+//        getInfoOfOrder(orderLogic,0);
+//        getInfoOfOrder(orderLogic,1);
+//        getInfoOfOrder(orderLogic,2);
+//        getInfoOfOrder(orderLogic,3);
+//        getInfoOfOrder(orderLogic,4);
 
 
     }

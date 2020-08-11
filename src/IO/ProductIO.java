@@ -13,4 +13,14 @@ public interface ProductIO {
 
     void changeStockBalanceIn(Product product, Integer stockBalance) throws IOException, SQLException;
 
+    // Product getById(Long id);
+    // Long create(Product product);
+    // void modify(Product product);
+    // void modify(Long id, String fieldName, Object value);
+    // void modifyBalance(Product product, Integer newBalance);
+    // List<Product> listAll();
+    // void remove(Long id);
+    // void remove(Product product);
+    // List<Long> create(List<Product> products);
+
 }
