@@ -18,8 +18,7 @@ public class OrderItem {
     public String getOrderItemToString() {
         return product.getProductToString() +
                 count +
-                ";" + price +
-                "\n";
+                ";" + price ;
     }
 
     @Override

@@ -14,11 +14,10 @@ public class Person {
 
     @Override
     public String toString() {
-        return "Person{" +
-                "name='" + name + '\'' +
-                ", numberPhone='" + numberPhone + '\'' +
-                ", deliveryAddress='" + deliveryAddress + '\'' +
-                '}';
+        return
+                name +
+                ";" + numberPhone +
+                ";" + deliveryAddress;
     }
 
     public String getName() {

@@ -1,125 +1,145 @@
 import BL.OrderLogic;
-import IO.OrderIO;
-import IO.OrderIOFile;
+import IO.OrderIOFromDB;
+import IO.OrderIOFromFile;
+import IO.ProductIOFromDB;
 import IO.ProductIOFromFile;
 import Lists.PriceList;
 import Models.Order;
 import Models.Person;
+import UI.GeneralFrame;
 
 import java.io.IOException;
+import java.sql.*;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, SQLException {
 
-//        checkOrderMethods();
+        //******13
 
-        //загрузка товаров из файла в коллекцию readProductsFromFile
+        // first actions for initiate
 
-        System.out.println("Чтение из файла и запись в коллекцию");
+//        firstDBLoad(); //первичное создание схемы в БД; создание таблиц
 
-        PropertyService service = new FilePropertyService();
+        PropertyService service = new FilePropertyService();//настройки для чтения и записи из файла
 
-        ProductIOFromFile productIOFromFile = new ProductIOFromFile();
+        OrderLogic orderLogic = new OrderLogic();
+
+        // for DB
+
+//        ProductIOFromDB productIOFromDB = new ProductIOFromDB();
+//        orderLogic.setProductIO(productIOFromDB); // чтение товаров из БД
+//        PriceList priceList = new PriceList(productIOFromDB.readProductsFrom());// чтение из БД и запись в коллекцию
+//        OrderIOFromDB orderIO = new OrderIOFromDB();
+//        orderLogic.setOrderIO(orderIO); // запись заказов в БД
+
+        // for files
+
+        ProductIOFromFile productIOFromFile = new ProductIOFromFile(); // чтение из файла
+        productIOFromFile.setPathToFile(service.getByName("ProductFilePath")); // чтение из файла
+        orderLogic.setProductIO(productIOFromFile);// чтение товаров из файла
+        PriceList priceList = new PriceList(productIOFromFile.readProductsFrom()); // чтение из файла
+        OrderIOFromFile orderIO = new OrderIOFromFile();
+        orderLogic.setOrderIO(orderIO); //запись заказов в файл
+        orderIO.setPathToFileOrders(service.getByName("OrdersFilePath"));
+        orderIO.setPathToFileOrderItems(service.getByName("OrderItemFilePath"));
+
+        // form
+
+        GeneralFrame generalFrame = new GeneralFrame(productIOFromFile.readProductsFrom(), orderLogic.getOrderList(), orderLogic);
 
 
-        productIOFromFile.setPathToFile(service.getByName("ProductFilePath"));
+        // loading orders from (DB or files)
 
-        System.out.println("-------" + service.getByName("ProductFilePath"));
+        System.out.println("Заказов в коллекции - " + orderLogic.getOrderList().getOrders().size());
+        orderIO.readOrdersFrom(orderLogic.getOrderList());// чтение заказов из хранилища и запись в коллекцию
+        System.out.println("Уже оформленных заказов в коллекции - " + orderLogic.getOrderList().getOrders().size());
 
 
-        PriceList priceList = new PriceList(productIOFromFile.readProductsFromFile());
 
         System.out.println("******");
         System.out.println("Создание заказов");
 
-        //создать persons, создать их заказы, накидать товары в заказы
+        // create persons
 
         Person personWinnie = new Person("Winnie the Pooh", "123-45-67","A hole under an old oak tree");
         Person personPiglet = new Person("Piglet", "777-55-66","Little tree house on pine");
         Person personRabbit = new Person("Rabbit", "111-22-33","Nice house on the meadow");
 
+        // create orders; add products in orders
+
         Order orderOfWinnie = new Order(personWinnie);
+        orderOfWinnie.addItem(productIOFromFile.readProductsFrom().get(0),3);
+        orderOfWinnie.addItem(productIOFromFile.readProductsFrom().get(2),1);
+
         Order orderOfPiglet = new Order(personPiglet);
+        orderOfPiglet.addItem(productIOFromFile.readProductsFrom().get(1),4);
 
-        System.out.println("******");
-        System.out.println("Добавление в заказ продукта Винни");
+        Order orderOfRabbit = new Order(personRabbit);
+        orderOfRabbit.addItem(productIOFromFile.readProductsFrom().get(2),2);
+        orderOfRabbit.addItem(productIOFromFile.readProductsFrom().get(1),1);
 
-        orderOfWinnie.addItem(priceList.getProducts().get(0),1);
-        System.out.println("Заказ Винни:"+ orderOfWinnie.toString());
+        // saving orders in storage (files or DB)
 
-        System.out.println("******");
-        System.out.println("Добавление в заказ продукта Пиглет");
-
-        orderOfPiglet.addItem(priceList.getProducts().get(1),4);
-        System.out.println("Заказ Пиглет:"+ orderOfPiglet.toString());
-
-        System.out.println("колво на складе товара Винни " + priceList.getProducts().get(0).getName() + priceList.getProducts().get(0).getColor() + priceList.getProducts().get(0).getStockBalance());
-        System.out.println("колво на складе товара Пиглет " + priceList.getProducts().get(1).getName() + priceList.getProducts().get(1).getColor() + priceList.getProducts().get(1).getStockBalance());
-
-        orderOfPiglet.changeCountOfOrderItem(priceList.getProducts().get(1), 0);
-
-        System.out.println("Заказ Пиглет:"+ orderOfPiglet.toString());
+//        orderLogic.saveOrderAndItems(orderOfWinnie);
+//        orderLogic.saveOrderAndItems(orderOfPiglet);
+//        orderLogic.saveOrderAndItems(orderOfRabbit);
 
 
-        OrderLogic orderLogic = new OrderLogic();
-        orderLogic.setProductIO(productIOFromFile);
-        OrderIOFile orderIO = new OrderIOFile();
+        System.out.println("Общее количество заказов - " + orderLogic.getOrderList().getOrders().size());
 
-        orderLogic.setOrderIO(orderIO);
+//        getInfoOfOrder(orderLogic,0);
+//        getInfoOfOrder(orderLogic,1);
+//        getInfoOfOrder(orderLogic,2);
+//        getInfoOfOrder(orderLogic,3);
+//        getInfoOfOrder(orderLogic,4);
 
-        orderIO.setPathToFile(service.getByName("OrdersFilePath"));
-
-
-        System.out.println("******");
-        System.out.println("Сохранение заказов");
-
-        orderLogic.saveOrder(orderOfWinnie);
-
-
-        System.out.println("колво на складе товара Винни после сохранения заказа" + priceList.getProducts().get(0).getName() + priceList.getProducts().get(0).getStockBalance());
-
-
-        orderLogic.saveOrder(orderOfPiglet);
-
-        System.out.println("колво на складе товара Пиглета после сохранения заказа" + priceList.getProducts().get(1).getName() + priceList.getProducts().get(1).getStockBalance());
-
-//        Order orderOfRabbit = new Order(personRabbit);
-//
-//        System.out.println("******");
-//        System.out.println("Добавление в заказ продукта Кролика");
-//
-//        orderOfRabbit.addItem(priceList.getProducts().get(0),1);
-//        orderOfRabbit.addItem(priceList.getProducts().get(2),2);
-//        System.out.println("Заказ Кролика:"+ orderOfWinnie.toString());
-
-
-
-
-
-        //указать слишком большое количество в заказе
-        //удалить товары из заказы
-        //поменять количество в заказе
-        //
-        //сохранить заказы
 
     }
 
-    public static void checkIOFromFile() throws IOException {
-        // проверка записи перезаписи в файл;корр кол-ва в файле;пустого цвета
+    public static void getInfoOfOrder (OrderLogic orderLogic, int indexOfOrder) {
+        System.out.println(orderLogic.getOrderList().getOrders().get(indexOfOrder).getContactPerson().getName());
+        System.out.println(orderLogic.getOrderList().getOrders().get(indexOfOrder).getOrderId());
+        System.out.println(orderLogic.getOrderList().getOrders().get(indexOfOrder).getOrderItems().entrySet() + "\n");
+    }
+
+    public static void firstDBLoad () throws SQLException {
+
+        Connection connection = DriverManager.getConnection
+                ("jdbc:postgresql://localhost:5432/my_database", "user", "passw0rd");
+
+        Statement createSchemaStatement = connection.createStatement();
+        createSchemaStatement.executeUpdate
+                ("CREATE SCHEMA new_schema;");
+
+        Statement createStatusTableStatement = connection.createStatement();
+        createStatusTableStatement.executeUpdate
+                ("CREATE TABLE new_schema.status (ID SERIAL PRIMARY KEY not null, status  CHARACTER VARYING(30));");
+
+        Statement createPricelistTableStatement = connection.createStatement();
+        createPricelistTableStatement.executeUpdate
+                ("CREATE TABLE new_schema.pricelist (ID SERIAL PRIMARY KEY,name CHARACTER VARYING(30),color CHARACTER VARYING(30),price NUMERIC,stockBalance INTEGER);");
+
+        Statement createPersonsTableStatement = connection.createStatement();
+        createPersonsTableStatement.executeUpdate
+                ("CREATE TABLE new_schema.persons (ID SERIAL PRIMARY KEY not null,Name CHARACTER VARYING(30),NumberPhone CHARACTER VARYING(10), deliveryAddress CHARACTER VARYING(100));");
+
+        Statement createOrderListTableStatement = connection.createStatement();
+        createOrderListTableStatement.executeUpdate
+                ("CREATE TABLE new_schema.orderList (OrderId SERIAL PRIMARY KEY,orderDate CHARACTER VARYING(30),contactPerson INTEGER references new_schema.persons (ID),status INTEGER references new_schema.status  (ID));");
+
+        Statement createOrderItemListTableStatement = connection.createStatement();
+        createOrderItemListTableStatement.executeUpdate
+                ("CREATE TABLE new_schema.orderItemList (OrderId INTEGER references new_schema.orderList (OrderId),ProductId INTEGER references new_schema.pricelist (ID),count INTEGER,price NUMERIC);");
 
 
+        createOrderItemListTableStatement.close();
+        createOrderListTableStatement.close();
+        createSchemaStatement.close();
+        createPersonsTableStatement.close();
+        createPricelistTableStatement.close();
+        createStatusTableStatement.close();
+        connection.close();
 
-        ProductIOFromFile productIOFromFile = new ProductIOFromFile();
-
-        PriceList priceList = new PriceList(productIOFromFile.readProductsFromFile());
-
-        System.out.println(priceList.showProductList());
-
-        productIOFromFile.changeStockBalanceInFile(priceList.getProducts().get(1), 1);
-
-        System.out.println("color is" + priceList.getProducts().get(2).getColor() + "!");
-
-//        System.out.println(priceList.showProductList());
     }
 }

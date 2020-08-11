@@ -8,15 +8,21 @@
     <border type="none"/>
     <children>
       <component id="ea308" class="javax.swing.JTextArea" binding="textArea1" default-binding="true">
-        <constraints border-constraint="Center"/>
+        <constraints border-constraint="South"/>
         <properties/>
       </component>
       <component id="ea60a" class="javax.swing.JButton" binding="button1" default-binding="true">
-        <constraints border-constraint="South"/>
+        <constraints border-constraint="West"/>
         <properties>
           <text value="Button"/>
         </properties>
       </component>
+      <grid id="2d6cb" layout-manager="BorderLayout" hgap="0" vgap="0">
+        <constraints border-constraint="Center"/>
+        <properties/>
+        <border type="none"/>
+        <children/>
+      </grid>
     </children>
   </grid>
 </form>

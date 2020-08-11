@@ -12,43 +12,43 @@ import java.util.Scanner;
 public class ProductIOFromFile implements ProductIO {
 
     private String pathToFile;
-    List<Product> products = new ArrayList<>();//возможно создать коллекцию products в main или BL
+    List<Product> products = new ArrayList<>();
 
     public void setPathToFile(String pathToFile) {
         this.pathToFile = pathToFile;
     }
 
-    public List<Product> readProductsFromFile() throws FileNotFoundException {
+    public List<Product> readProductsFrom() throws FileNotFoundException {
 
-//        List<Product> products = new ArrayList<>(); //коллекция будет создана при создании объекта ProductIOFromFile
+        if (products.size() < 1) {
 
-        FileInputStream fileInputStream = new FileInputStream(pathToFile);
-        Scanner scanner = new Scanner(fileInputStream);
-        scanner.useDelimiter(";");
-        while (scanner.hasNextLine()) {
+            FileInputStream fileInputStream = new FileInputStream(pathToFile);
+            Scanner scanner = new Scanner(fileInputStream);
+            scanner.useDelimiter(";");
+            while (scanner.hasNextLine()) {
 
-            Integer id = scanner.nextInt();
-            String name = scanner.next();
-            String color = scanner.next();
-            Integer price = scanner.nextInt();
-            Integer stockBalance = scanner.nextInt();
+                Integer id = scanner.nextInt();
+                String name = scanner.next();
+                String color = scanner.next();
+                Integer price = scanner.nextInt();
+                Integer stockBalance = scanner.nextInt();
 
-            Product product = new Product(id, name,color, price, stockBalance);
-            products.add(product);
+                Product product = new Product(id, name, color, price, stockBalance);
+                products.add(product);
 
-            scanner.nextLine();
+                scanner.nextLine();
 
+            }
         }
         return products;
+
     }
 
     @Override
-    public void changeStockBalanceInFile(Product product, Integer deleteFromStockBalance) throws IOException {
+    public void changeStockBalanceIn(Product product, Integer deleteFromStockBalance) throws IOException {
 
         FileInputStream fileInputStream = new FileInputStream(pathToFile);
         BufferedInputStream bufferedInputStream = new BufferedInputStream( fileInputStream);
-
-
 
 //        Writer writer = new FileWriter("PriceListFile");
 //        RandomAccessFile randomAccessFile = new RandomAccessFile();
@@ -93,8 +93,6 @@ public class ProductIOFromFile implements ProductIO {
         }
 
         String s = sb.toString();
-
-        System.out.println("changeStockBalanceInFile: \n"+s);
 
         FileOutputStream fileOutputStream = new FileOutputStream(pathToFile);
         BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
